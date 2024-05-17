@@ -49,6 +49,23 @@ function disableForm(disable) {
     }
 }
 
+function resetErrorsState() {
+    const idInstanceInput = document.getElementById("id-instance-input");
+    const apiTokenInstanceInput = document.getElementById("api-token-instance-input");
+    const sendMessagePhoneInput = document.getElementById("send-message-phone-input")
+    const sendMessageMessageInput = document.getElementById("send-message-message-input")
+    const sendFilePhoneInput = document.getElementById("send-file-phone-input")
+    const sendFileUrlInput = document.getElementById("send-file-url-input")
+
+    idInstanceInput.classList.remove("field-error")
+    apiTokenInstanceInput.classList.remove("field-error")
+    sendMessagePhoneInput.classList.remove("field-error")
+    sendMessageMessageInput.classList.remove("field-error")
+    sendFilePhoneInput.classList.remove("field-error")
+    sendFileUrlInput.classList.remove("field-error")
+}
+
+
 function fetchSettingsData(apiUrl, idInstance, apiTokenInstance) {
     const urlTemplate = `${apiUrl}/waInstance${idInstance}/getSettings/${apiTokenInstance}`;
 
@@ -57,23 +74,23 @@ function fetchSettingsData(apiUrl, idInstance, apiTokenInstance) {
     return fetch(urlTemplate, {
         method: "GET",
     })
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error(`Request was not successful, status code: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then((data) => {
-        console.log("Success:", data);
-        return JSON.stringify(data, undefined, 2);
-    })
-    .catch((error) => {
-        console.error("Error:", error);
-        return error
-    })
-    .finally(() => {
-        disableForm(false);
-    });
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Request was not successful, status code: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log("Success:", data);
+            return JSON.stringify(data, undefined, 2);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            return error
+        })
+        .finally(() => {
+            disableForm(false);
+        });
 }
 
 function fetchStateInstanceData(apiUrl, idInstance, apiTokenInstance) {
@@ -84,71 +101,140 @@ function fetchStateInstanceData(apiUrl, idInstance, apiTokenInstance) {
     return fetch(urlTemplate, {
         method: "GET",
     })
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error(`Request was not successful, status code: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then((data) => {
-        console.log("Success:", data);
-        return JSON.stringify(data, undefined, 2);
-    })
-    .catch((error) => {
-        console.error("Error:", error);
-        return error
-    })
-    .finally(() => {
-        disableForm(false);
-    });
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Request was not successful, status code: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log("Success:", data);
+            return JSON.stringify(data, undefined, 2);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            return error
+        })
+        .finally(() => {
+            disableForm(false);
+        });
 }
 
-// TODO:
-// function sendMessage(apiUrl, idInstance, apiTokenInstance) {
-//     const urlTemplate = `${apiUrl}/waInstance${idInstance}/sendMessage/${apiTokenInstance}`;
 
-//     disableForm(true);
+function sendMessage(apiUrl, idInstance, apiTokenInstance, recipient, message) {
+    const urlTemplate = `${apiUrl}/waInstance${idInstance}/sendMessage/${apiTokenInstance}`;
 
-//     return fetch(urlTemplate, {
-//         method: "POST",
-//     })
-//     .then((response) => {
-//         if (!response.ok) {
-//             throw new Error(`Request was not successful, status code: ${response.status}`);
-//         }
-//         return response.json();
-//     })
-//     .then((data) => {
-//         console.log("Success:", data);
-//         return JSON.stringify(data, undefined, 2);
-//     })
-//     .catch((error) => {
-//         console.error("Error:", error);
-//         return error
-//     })
-//     .finally(() => {
-//         disableForm(false);
-//     });
-// }
+    let chatId
+
+    if (recipient.length > 11) {
+        chatId = `${recipient}@g.us`
+    } else {
+        chatId = `${recipient}@c.us`
+    }
+
+    const formData = {
+        chatId: chatId,
+        message: message,
+    };
+
+    disableForm(true);
+
+    return fetch(urlTemplate, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Request was not successful, status code: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log("Success:", data);
+            return JSON.stringify(data, undefined, 2);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            return error
+        })
+        .finally(() => {
+            disableForm(false);
+        });
+}
 
 
-function getData(event, isSubmit) {
+function sendFileByUrl(apiUrl, idInstance, apiTokenInstance, recipient, urlFile) {
+    const urlTemplate = `${apiUrl}/waInstance${idInstance}/sendFileByUrl/${apiTokenInstance}`;
+
+    let chatId
+
+    if (recipient.length > 11) {
+        chatId = `${recipient}@g.us`
+    } else {
+        chatId = `${recipient}@c.us`
+    }
+
+    const urlFileParts = urlFile.split('/');
+    const fileName = urlFileParts[urlFileParts.length - 1];
+    const extensionRegex = /\.\w+$/;
+    const hasExtension = extensionRegex.test(fileName);
+    if (!hasExtension) {
+        fileName = null
+    }
+
+    const formData = {
+        chatId: chatId,
+        urlFile: urlFile,
+        fileName: fileName
+    };
+
+    console.log(`URL: ${urlFile}\nFile Name: ${fileName}`)
+
+    disableForm(true);
+
+    return fetch(urlTemplate, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Request was not successful, status code: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log("Success:", data);
+            return JSON.stringify(data, undefined, 2);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            return error
+        })
+        .finally(() => {
+            disableForm(false);
+        });
+}
+
+function getData(event) {
     event.preventDefault();
 
     const responseTarget = document.getElementById("target")
-    responseTarget.textContent = ""
 
     let isValid = true
 
-     // Just for showcase, must be unique for every user
+    // Just for showcase, must be unique for every user
     const apiUrl = "https://7103.api.greenapi.com"
-
 
     const idInstanceInput = document.getElementById("id-instance-input");
     const apiTokenInstanceInput = document.getElementById("api-token-instance-input");
 
-    idInstanceInput.classList.remove("field-error")
-    apiTokenInstanceInput.classList.remove("field-error")
+    resetErrorsState()
 
     if (!idInstanceInput.value.trim()) {
         idInstanceInput.classList.add("field-error")
@@ -164,24 +250,102 @@ function getData(event, isSubmit) {
         return
     }
 
-    if (isSubmit) {
+    if (event instanceof SubmitEvent) {
         switch (event.submitter.id) {
-            case "get-settings-button":
 
+            case "get-settings-button":
+                responseTarget.textContent = ""
                 fetchSettingsData(apiUrl, idInstanceInput.value, apiTokenInstanceInput.value)
-                .then((formattedData) => {
+                    .then((formattedData) => {
+                        if (formattedData) {
+                            responseTarget.textContent = formattedData;
+                        }
+                    });
+                break;
+
+            case "send-message-button":
+
+                const sendMessagePhoneInput = document.getElementById("send-message-phone-input")
+                const sendMessageMessageInput = document.getElementById("send-message-message-input")
+
+                if (!sendMessagePhoneInput.value.trim()) {
+                    sendMessagePhoneInput.classList.add("field-error")
+                    isValid = false
+                }
+
+                if (!sendMessageMessageInput.value.trim()) {
+                    sendMessageMessageInput.classList.add("field-error")
+                    isValid = false
+                }
+
+                if (!isValid) {
+                    return
+                }
+
+                responseTarget.textContent = ""
+                sendMessage(
+                    apiUrl,
+                    idInstanceInput.value,
+                    apiTokenInstanceInput.value,
+                    sendMessagePhoneInput.value,
+                    sendMessageMessageInput.value,
+                ).then((formattedData) => {
                     if (formattedData) {
                         responseTarget.textContent = formattedData;
                     }
                 });
-                break;
 
-            case "send-message-button":
-                console.log("send-message-button")
                 break;
 
             case "send-file-button":
-                console.log("send-file-button")
+
+                const sendFilePhoneInput = document.getElementById("send-file-phone-input")
+                const sendFileUrlInput = document.getElementById("send-file-url-input")
+
+                if (!sendFilePhoneInput.value.trim()) {
+                    sendFilePhoneInput.classList.add("field-error")
+                    isValid = false
+                }
+
+                if (!sendFileUrlInput.value.trim()) {
+                    sendFileUrlInput.classList.add("field-error")
+                    isValid = false
+                }
+
+                if (!isValid) {
+                    return
+                }
+
+                responseTarget.textContent = ""
+                sendFileByUrl(
+                    apiUrl,
+                    idInstanceInput.value,
+                    apiTokenInstanceInput.value,
+                    sendFilePhoneInput.value,
+                    sendFileUrlInput.value,
+                ).then((formattedData) => {
+                    if (formattedData) {
+                        responseTarget.textContent = formattedData;
+                    }
+                });
+
+                break;
+
+            default:
+                console.log("Unknown submitter")
+                break;
+        }
+    } else if (event instanceof PointerEvent) {
+        switch (event.target.id) {
+
+            case "get-state-instance-button":
+                responseTarget.textContent = ""
+                fetchStateInstanceData(apiUrl, idInstanceInput.value, apiTokenInstanceInput.value)
+                    .then((formattedData) => {
+                        if (formattedData) {
+                            responseTarget.textContent = formattedData;
+                        }
+                    });
                 break;
 
             default:
@@ -189,21 +353,8 @@ function getData(event, isSubmit) {
                 break;
         }
     } else {
-        switch (event.srcElement.id) {
-            case "get-state-instance-button":
-
-                fetchStateInstanceData(apiUrl, idInstanceInput.value, apiTokenInstanceInput.value)
-                .then((formattedData) => {
-                    if (formattedData) {
-                        responseTarget.textContent = formattedData;
-                    }
-                });
-                break;
-
-            default:
-                console.log("Unknown submitter")
-                break;
-        }
+        console.log("Unknown event type");
     }
+
 
 }

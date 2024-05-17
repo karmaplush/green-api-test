@@ -20,7 +20,7 @@
 
       <form class="request-data-block" onsubmit="getData(event, true)">
         <label for="id-instance-input">ID Instance *</label>
-        <input class="request-input" placeholder="idInstance" id="id-instance-input" name="idInstance" pattern="[a-zA-Z0-9@.]+" required autocomplete="off">
+        <input class="request-input" placeholder="idInstance" id="id-instance-input" name="idInstance" pattern="[a-zA-Z0-9]+" required autocomplete="off">
         </input>
 
         <label for="api-token-instance-input">API Token Instance *</label>
@@ -33,14 +33,14 @@
 
 
       <form class="request-data-block" onsubmit="getData(event, true)">
-        <input class="request-input" placeholder="77771234567" id="send-message-phone-input" pattern="[0-9+]+" autocomplete="off"></input>
-        <textarea class="request-message-area" placeholder="Enter message..." id="send-message-message-input"></textarea>
+        <input class="request-input" placeholder="77771234567" id="send-message-phone-input" pattern="[0-9]+" autocomplete="off"></input>
+        <textarea class="request-message-area" placeholder="Enter message..." id="send-message-message-input" maxlength="20000"></textarea>
         <button class="request-button" id="send-message-button" type="submit">Send Message</button>
       </form>
 
       <form class="request-data-block" onsubmit="getData(event, true)">
-        <input class="request-input" placeholder="77771234567" id="send-file-phone-input" pattern="[0-9+]+" autocomplete="off"></input>
-        <input class="request-input" placeholder="https://example.com" id="send-file-url-input" autocomplete="off"></input>
+        <input class="request-input" placeholder="77771234567" id="send-file-phone-input" pattern="[0-9]+" autocomplete="off"></input>
+        <input class="request-input" placeholder="https://example.com" id="send-file-url-input" pattern="[^\s,~$€%#£?!]+" autocomplete="off"></input>
         <button class="request-button" id="send-file-button" type="submit">Send file by URL</button>
       </form>
 
