@@ -1,11 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Green API Test</title>
-</head>
-<body>
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+  <script src="js/main.js"></script>
+  <title>Green API Test</title>
+</head>
+
+<body>
+  <div class="main">
+
+    <div class="request">
+
+      <form class="request-data-block" onsubmit="getData(event, true)">
+        <label for="id-instance-input">ID Instance *</label>
+        <input class="request-input" placeholder="idInstance" id="id-instance-input" name="idInstance" pattern="[a-zA-Z0-9@.]+" required autocomplete="off">
+        </input>
+
+        <label for="api-token-instance-input">API Token Instance *</label>
+        <input class="request-input" placeholder="ApiTokenInstance" id="api-token-instance-input" name="ApiTokenInstance" pattern="[a-zA-Z0-9@.]+" required autocomplete="off">
+        </input>
+
+        <button class="request-button" id="get-settings-button" type="submit">Get Settings</button>
+        <button class="request-button" id="get-state-instance-button" type="button" onclick="getData(event, false)">Get State Instance</button>
+      </form>
+
+
+      <form class="request-data-block" onsubmit="getData(event, true)">
+        <input class="request-input" placeholder="77771234567" id="send-message-phone-input" pattern="[0-9+]+" autocomplete="off"></input>
+        <textarea class="request-message-area" placeholder="Enter message..." id="send-message-message-input"></textarea>
+        <button class="request-button" id="send-message-button" type="submit">Send Message</button>
+      </form>
+
+      <form class="request-data-block" onsubmit="getData(event, true)">
+        <input class="request-input" placeholder="77771234567" id="send-file-phone-input" pattern="[0-9+]+" autocomplete="off"></input>
+        <input class="request-input" placeholder="https://example.com" id="send-file-url-input" autocomplete="off"></input>
+        <button class="request-button" id="send-file-button" type="submit">Send file by URL</button>
+      </form>
+
+
+    </div>
+
+    <div class="response">
+      <h2 class="response-header">Response:</h2>
+      <div id="response-block">
+        <pre id="target" class="response-text"></pre>
+      </div>
+
+    </div>
+
+  </div>
 </body>
+
 </html>
