@@ -1,5 +1,4 @@
 function disableForm(disable) {
-
     const idInstanceInput = document.getElementById("id-instance-input");
     const apiTokenInstanceInput = document.getElementById("api-token-instance-input");
     const getSettingsButton = document.getElementById("get-settings-button");
@@ -65,7 +64,6 @@ function resetErrorsState() {
     sendFileUrlInput.classList.remove("field-error")
 }
 
-
 function fetchSettingsData(apiUrl, idInstance, apiTokenInstance) {
     const urlTemplate = `${apiUrl}/waInstance${idInstance}/getSettings/${apiTokenInstance}`;
 
@@ -86,7 +84,7 @@ function fetchSettingsData(apiUrl, idInstance, apiTokenInstance) {
         })
         .catch((error) => {
             console.error("Error:", error);
-            return error
+            throw error
         })
         .finally(() => {
             disableForm(false);
@@ -113,13 +111,12 @@ function fetchStateInstanceData(apiUrl, idInstance, apiTokenInstance) {
         })
         .catch((error) => {
             console.error("Error:", error);
-            return error
+            throw error
         })
         .finally(() => {
             disableForm(false);
         });
 }
-
 
 function sendMessage(apiUrl, idInstance, apiTokenInstance, recipient, message) {
     const urlTemplate = `${apiUrl}/waInstance${idInstance}/sendMessage/${apiTokenInstance}`;
@@ -158,13 +155,12 @@ function sendMessage(apiUrl, idInstance, apiTokenInstance, recipient, message) {
         })
         .catch((error) => {
             console.error("Error:", error);
-            return error
+            throw error
         })
         .finally(() => {
             disableForm(false);
         });
 }
-
 
 function sendFileByUrl(apiUrl, idInstance, apiTokenInstance, recipient, urlFile) {
     const urlTemplate = `${apiUrl}/waInstance${idInstance}/sendFileByUrl/${apiTokenInstance}`;
@@ -178,8 +174,8 @@ function sendFileByUrl(apiUrl, idInstance, apiTokenInstance, recipient, urlFile)
     }
 
     const urlFileParts = urlFile.split('/');
-    const fileName = urlFileParts[urlFileParts.length - 1];
     const extensionRegex = /\.\w+$/;
+    let fileName = urlFileParts[urlFileParts.length - 1];
     const hasExtension = extensionRegex.test(fileName);
     if (!hasExtension) {
         fileName = null
@@ -214,7 +210,7 @@ function sendFileByUrl(apiUrl, idInstance, apiTokenInstance, recipient, urlFile)
         })
         .catch((error) => {
             console.error("Error:", error);
-            return error
+            throw error
         })
         .finally(() => {
             disableForm(false);
@@ -228,7 +224,7 @@ function getData(event) {
 
     let isValid = true
 
-    // Just for showcase, must be unique for every user
+    // Just for showcase, must be (?) unique for every user
     const apiUrl = "https://7103.api.greenapi.com"
 
     const idInstanceInput = document.getElementById("id-instance-input");
@@ -250,6 +246,8 @@ function getData(event) {
         return
     }
 
+    const corsErrorMessage = "Failed to fetch (CORS policy must be disabled in browser for making request)"
+
     if (event instanceof SubmitEvent) {
         switch (event.submitter.id) {
 
@@ -260,11 +258,17 @@ function getData(event) {
                         if (formattedData) {
                             responseTarget.textContent = formattedData;
                         }
+                    })
+                    .catch((error) => {
+                        if (error instanceof TypeError && error.message == "Failed to fetch") {
+                            responseTarget.textContent = corsErrorMessage;
+                        } else {
+                            responseTarget.textContent = `Error: ${error.message}`
+                        }
                     });
                 break;
 
             case "send-message-button":
-
                 const sendMessagePhoneInput = document.getElementById("send-message-phone-input")
                 const sendMessageMessageInput = document.getElementById("send-message-message-input")
 
@@ -293,12 +297,17 @@ function getData(event) {
                     if (formattedData) {
                         responseTarget.textContent = formattedData;
                     }
+                }).catch((error) => {
+                    if (error instanceof TypeError && error.message == "Failed to fetch") {
+                        responseTarget.textContent = corsErrorMessage;
+                    } else {
+                        responseTarget.textContent = `Error: ${error.message}`
+                    }
                 });
 
                 break;
 
             case "send-file-button":
-
                 const sendFilePhoneInput = document.getElementById("send-file-phone-input")
                 const sendFileUrlInput = document.getElementById("send-file-url-input")
 
@@ -327,6 +336,12 @@ function getData(event) {
                     if (formattedData) {
                         responseTarget.textContent = formattedData;
                     }
+                }).catch((error) => {
+                    if (error instanceof TypeError && error.message == "Failed to fetch") {
+                        responseTarget.textContent = corsErrorMessage;
+                    } else {
+                        responseTarget.textContent = `Error: ${error.message}`
+                    }
                 });
 
                 break;
@@ -337,13 +352,18 @@ function getData(event) {
         }
     } else if (event instanceof PointerEvent) {
         switch (event.target.id) {
-
             case "get-state-instance-button":
                 responseTarget.textContent = ""
                 fetchStateInstanceData(apiUrl, idInstanceInput.value, apiTokenInstanceInput.value)
                     .then((formattedData) => {
                         if (formattedData) {
                             responseTarget.textContent = formattedData;
+                        }
+                    }).catch((error) => {
+                        if (error instanceof TypeError && error.message == "Failed to fetch") {
+                            responseTarget.textContent = corsErrorMessage;
+                        } else {
+                            responseTarget.textContent = `Error: ${error.message}`
                         }
                     });
                 break;
@@ -355,6 +375,5 @@ function getData(event) {
     } else {
         console.log("Unknown event type");
     }
-
 
 }
